@@ -1,7 +1,6 @@
 package generator.common;
 
 import com.amazonaws.handlers.AsyncHandler;
-import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -11,12 +10,20 @@ import javax.lang.model.element.Modifier;
 import java.lang.reflect.Method;
 
 public class RxAwsSdkGenerator {
+    private Class<?> amazonClass;
+    private String targetClassName;
+
+    public RxAwsSdkGenerator(Class<?> amazonClass, String targetClassName) {
+        this.amazonClass = amazonClass;
+        this.targetClassName = targetClassName;
+    }
+
     public TypeSpec generateSpec() {
         return generateRxClass(fetchMethodsToConvert().map(this::generateRxMethod));
     }
 
-    private TypeSpec generateRxClass(Observable<RxMethod> methods) {
-        TypeSpec.Builder rxSqs = TypeSpec.classBuilder("AmazonSdkRxDynamoDb")
+    private TypeSpec generateRxClass(Observable<RxAskSdkMethod> methods) {
+        TypeSpec.Builder rxSqs = TypeSpec.classBuilder(targetClassName)
             .addModifiers(Modifier.PUBLIC);
 
         rxSqs.addField(amazonClientField());
@@ -28,13 +35,8 @@ public class RxAwsSdkGenerator {
         return rxSqs.build();
     }
 
-    /**
-     * return Observable.create(subscriber -> client.listQueuesAsync(handlerFor(subscriber)));
-     * @return
-     */
-
     private FieldSpec amazonClientField() {
-        return FieldSpec.builder(AmazonSQSAsync.class, "amazonClient")
+        return FieldSpec.builder(amazonClass, "amazonClient")
                 .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
                 .build();
     }
@@ -42,18 +44,18 @@ public class RxAwsSdkGenerator {
     private MethodSpec constructor() {
         return MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(AmazonSQSAsync.class, "amazonClient")
+                .addParameter(amazonClass, "amazonClient")
                 .addStatement("this.$N = $N", "amazonClient", "amazonClient")
                 .build();
     }
 
 
-    private RxMethod generateRxMethod(Method m) {
-        return new RxMethod(m);
+    private RxAskSdkMethod generateRxMethod(Method m) {
+        return new RxAskSdkMethod(m);
     }
 
     private Observable<Method> fetchMethodsToConvert() {
-        Method[] methods = AmazonSQSAsync.class.getMethods();
+        Method[] methods = amazonClass.getMethods();
         return Observable.from(methods)
                 .filter(m -> m.getName().endsWith("Async"))
                 .filter(m -> m.getParameterTypes().length == 2 && m.getParameterTypes()[1].isAssignableFrom(AsyncHandler.class));

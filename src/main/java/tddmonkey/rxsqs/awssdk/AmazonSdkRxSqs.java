@@ -31,12 +31,21 @@ import com.amazonaws.services.sqs.model.SetQueueAttributesRequest;
 import java.lang.String;
 import java.lang.Void;
 import rx.Observable;
+import tddmonkey.common.AmazonWebServiceRequestAsyncHandler;
 
 public class AmazonSdkRxSqs {
   private final AmazonSQSAsync amazonClient;
 
   public AmazonSdkRxSqs(AmazonSQSAsync amazonClient) {
     this.amazonClient = amazonClient;
+  }
+
+  public Observable<CreateQueueResult> createQueue(String string) {
+    return Observable.create(subscriber -> amazonClient.createQueueAsync(string, AmazonWebServiceRequestAsyncHandler.valueEmittingHandlerFor(subscriber)));
+  }
+
+  public Observable<CreateQueueResult> createQueue(CreateQueueRequest createQueueRequest) {
+    return Observable.create(subscriber -> amazonClient.createQueueAsync(createQueueRequest, AmazonWebServiceRequestAsyncHandler.valueEmittingHandlerFor(subscriber)));
   }
 
   public Observable<Void> addPermission(AddPermissionRequest addPermissionRequest) {
@@ -49,14 +58,6 @@ public class AmazonSdkRxSqs {
 
   public Observable<ChangeMessageVisibilityBatchResult> changeMessageVisibilityBatch(ChangeMessageVisibilityBatchRequest changeMessageVisibilityBatchRequest) {
     return Observable.create(subscriber -> amazonClient.changeMessageVisibilityBatchAsync(changeMessageVisibilityBatchRequest, AmazonWebServiceRequestAsyncHandler.valueEmittingHandlerFor(subscriber)));
-  }
-
-  public Observable<CreateQueueResult> createQueue(String string) {
-    return Observable.create(subscriber -> amazonClient.createQueueAsync(string, AmazonWebServiceRequestAsyncHandler.valueEmittingHandlerFor(subscriber)));
-  }
-
-  public Observable<CreateQueueResult> createQueue(CreateQueueRequest createQueueRequest) {
-    return Observable.create(subscriber -> amazonClient.createQueueAsync(createQueueRequest, AmazonWebServiceRequestAsyncHandler.valueEmittingHandlerFor(subscriber)));
   }
 
   public Observable<Void> deleteMessage(DeleteMessageRequest deleteMessageRequest) {

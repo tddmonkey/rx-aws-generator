@@ -1,21 +1,17 @@
 package generator.sqs;
 
+import com.amazonaws.services.sns.AmazonSNSAsync;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
+import generator.common.RxAwsSdkClientGenerator;
 
 import java.io.File;
 import java.io.IOException;
 
 public class Start {
-    public static void main(String[] args) {
-        TypeSpec rxSqs = new RxDynamoGenerator().generateSpec();
-        JavaFile javaFile = JavaFile.builder("tddmonkey.rxsqs.awssdk", rxSqs).build();
-
-        try {
-            javaFile.writeTo(new File(args[0]));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+    public static void main(String[] args) throws IOException {
+        new RxAwsSdkClientGenerator(AmazonSQSAsync.class, "tddmonkey.rxsqs.awssdk", "AmazonSdkRxSqs").generateTo(new File(args[0]));
     }
 }

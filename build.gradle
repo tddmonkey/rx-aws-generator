@@ -5,12 +5,15 @@ repositories {
 	jcenter()
 }
 
+def awsVersion = "1.10.52"
+
 dependencies {
 	compile(
-		'com.amazonaws:aws-java-sdk-sqs:1.10.50',
 		'io.reactivex:rxjava:1.1.0',
 		'com.squareup:javapoet:1.5.1',
-		'com.amazonaws:aws-java-sdk-dynamodb:1.10.52',
+		"com.amazonaws:aws-java-sdk-sqs:$awsVersion",
+		"com.amazonaws:aws-java-sdk-dynamodb:$awsVersion",
+		"com.amazonaws:aws-java-sdk-sns:$awsVersion",
 	)
 
 	testCompile(
@@ -37,5 +40,12 @@ task generateDynamoSdk(type: JavaExec) {
 	args file("src/main/java/")
 }
 
+task generateSnsSdk(type: JavaExec) {
+	main = 'generator.sns.Start'
+	classpath = sourceSets.main.runtimeClasspath
+	args file("src/main/java/")
+}
+
 generateSqsSdk.dependsOn classes
 generateDynamoSdk.dependsOn classes
+generateSnsSdk.dependsOn classes
