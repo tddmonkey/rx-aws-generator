@@ -1,4 +1,4 @@
-package tddmonkey.rxdynamo.awssdk;
+package tddmonkey.common;
 
 import com.amazonaws.AmazonWebServiceRequest;
 import com.amazonaws.handlers.AsyncHandler;

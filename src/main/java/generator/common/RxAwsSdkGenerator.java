@@ -1,7 +1,6 @@
-package generator.dynamo;
+package generator.common;
 
 import com.amazonaws.handlers.AsyncHandler;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
@@ -11,7 +10,7 @@ import rx.Observable;
 import javax.lang.model.element.Modifier;
 import java.lang.reflect.Method;
 
-public class RxSqsGenerator {
+public class RxAwsSdkGenerator {
     public TypeSpec generateSpec() {
         return generateRxClass(fetchMethodsToConvert().map(this::generateRxMethod));
     }
@@ -35,7 +34,7 @@ public class RxSqsGenerator {
      */
 
     private FieldSpec amazonClientField() {
-        return FieldSpec.builder(AmazonDynamoDBAsync.class, "amazonClient")
+        return FieldSpec.builder(AmazonSQSAsync.class, "amazonClient")
                 .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
                 .build();
     }
@@ -43,7 +42,7 @@ public class RxSqsGenerator {
     private MethodSpec constructor() {
         return MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(AmazonDynamoDBAsync.class, "amazonClient")
+                .addParameter(AmazonSQSAsync.class, "amazonClient")
                 .addStatement("this.$N = $N", "amazonClient", "amazonClient")
                 .build();
     }
@@ -54,7 +53,7 @@ public class RxSqsGenerator {
     }
 
     private Observable<Method> fetchMethodsToConvert() {
-        Method[] methods = AmazonDynamoDBAsync.class.getMethods();
+        Method[] methods = AmazonSQSAsync.class.getMethods();
         return Observable.from(methods)
                 .filter(m -> m.getName().endsWith("Async"))
                 .filter(m -> m.getParameterTypes().length == 2 && m.getParameterTypes()[1].isAssignableFrom(AsyncHandler.class));

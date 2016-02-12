@@ -1,4 +1,4 @@
-package generator.dynamo;
+package generator.common;
 
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
@@ -10,10 +10,10 @@ import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-public class RxMethod {
+public class RxAskSdkMethod {
     private Method amazonMethod;
 
-    public RxMethod(Method amazonMethod) {
+    public RxAskSdkMethod(Method amazonMethod) {
         this.amazonMethod = amazonMethod;
     }
 
