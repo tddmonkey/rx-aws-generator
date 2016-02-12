@@ -1,4 +1,4 @@
-package generator;
+package generator.dynamo;
 
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
