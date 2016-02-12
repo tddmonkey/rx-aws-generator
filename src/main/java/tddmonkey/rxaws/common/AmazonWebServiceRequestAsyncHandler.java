@@ -1,4 +1,4 @@
-package tddmonkey.common;
+package tddmonkey.rxaws.common;
 
 import com.amazonaws.AmazonWebServiceRequest;
 import com.amazonaws.handlers.AsyncHandler;

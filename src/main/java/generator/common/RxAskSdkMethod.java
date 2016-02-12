@@ -3,6 +3,7 @@ package generator.common;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import rx.Observable;
+import tddmonkey.rxaws.common.AmazonWebServiceRequestAsyncHandler;
 
 import javax.lang.model.element.Modifier;
 import java.lang.reflect.Method;
@@ -26,7 +27,7 @@ public class RxAskSdkMethod {
                 .addModifiers(Modifier.PUBLIC)
                 .returns(returnType)
                 .addParameter(parameter)
-                .addStatement("return $T.create($N -> $N.$L($N, AmazonWebServiceRequestAsyncHandler.$L($N)))", Observable.class, "subscriber", amazonClientFieldName, targetMethodName, parameter.name, handlerMethod, "subscriber")
+                .addStatement("return $T.create($N -> $N.$L($N, $T.$L($N)))", Observable.class, "subscriber", amazonClientFieldName, targetMethodName, parameter.name, AmazonWebServiceRequestAsyncHandler.class, handlerMethod, "subscriber")
                 .build();
         return main;
     }

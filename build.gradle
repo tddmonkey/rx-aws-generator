@@ -21,30 +21,45 @@ dependencies {
 }
 
 sourceSets {
-	main {
+	generated {
 		java {
-			exclude 'tddmonkey'
+			srcDir 'src/generated/java'
+			compileClasspath += main.output
+			runtimeClasspath += main.output
 		}
+	}
+}
+
+idea {
+	module {
+		sourceDirs += file('src/generated/java')
+		generatedSourceDirs += file('src/generated/java')
 	}
 }
 
 task generateSqsSdk(type: JavaExec) {
 	main = 'generator.sqs.Start'
 	classpath = sourceSets.main.runtimeClasspath
-	args file("src/main/java/")
+	args file("src/generated/java/")
 }
 
 task generateDynamoSdk(type: JavaExec) {
 	main = 'generator.dynamo.Start'
 	classpath = sourceSets.main.runtimeClasspath
-	args file("src/main/java/")
+	args file("src/generated/java/")
 }
 
 task generateSnsSdk(type: JavaExec) {
 	main = 'generator.sns.Start'
 	classpath = sourceSets.main.runtimeClasspath
-	args file("src/main/java/")
+	args file("src/generated/java/")
 }
+
+task generateAllSdks() { }
+
+generateAllSdks.dependsOn generateSqsSdk
+generateAllSdks.dependsOn generateDynamoSdk
+generateAllSdks.dependsOn generateSnsSdk
 
 generateSqsSdk.dependsOn classes
 generateDynamoSdk.dependsOn classes
