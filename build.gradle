@@ -2,10 +2,11 @@ apply plugin: 'java'
 apply plugin: 'idea'
 
 repositories {
+	mavenLocal()
 	jcenter()
 }
 
-def awsVersion = "1.10.52"
+def awsVersion = "1.10.55-SNAPSHOT"
 
 dependencies {
 	compile(

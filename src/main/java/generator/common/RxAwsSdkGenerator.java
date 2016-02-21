@@ -5,6 +5,7 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import rx.Observable;
+import rx.functions.Func1;
 
 import javax.lang.model.element.Modifier;
 import java.lang.reflect.Method;
@@ -57,8 +58,13 @@ public class RxAwsSdkGenerator {
     private Observable<Method> fetchMethodsToConvert() {
         Method[] methods = amazonClass.getMethods();
         return Observable.from(methods)
-                .filter(m -> m.getName().endsWith("Async"))
-                .filter(m -> m.getParameterTypes().length == 2 && m.getParameterTypes()[1].isAssignableFrom(AsyncHandler.class));
+                .filter(isAsyncMethod());
 
+    }
+
+    private Func1<Method, Boolean> isAsyncMethod() {
+        return m -> m.getName().endsWith("Async")
+                && m.getParameterTypes().length > 1
+                && m.getParameterTypes()[m.getParameterTypes().length-1].isAssignableFrom(AsyncHandler.class);
     }
 }
