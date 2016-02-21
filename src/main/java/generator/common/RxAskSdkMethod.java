@@ -68,8 +68,8 @@ public class RxAskSdkMethod {
     private void addParameters(MethodSpec.Builder mainBuilder, Parameters parameters) {
         parameters.parameters.stream().forEach(parameter ->
             mainBuilder.addParameter(ParameterSpec
-                    .builder(parameter.getType(), parameter.getName())
-                    .build())
+                .builder(parameter.getParameterizedType(), parameter.getName())
+                .build())
         );
     }
 
