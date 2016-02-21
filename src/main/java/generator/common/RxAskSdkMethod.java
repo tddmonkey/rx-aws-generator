@@ -51,7 +51,6 @@ public class RxAskSdkMethod {
         String handlerMethod = returnType.getActualTypeArguments()[0] == Void.class ? "voidHandlerFor" : "valueEmittingHandlerFor";
         String targetMethodName = amazonMethod.getName();
 
-        List<String> parameterNames = new ArrayList<>();
         String parameterPlaceholders = String.join(", ", Collections.nCopies(parameters.count(), "$N"));
 
         List<Object> statementArguments = new ArrayList<>();
@@ -63,7 +62,6 @@ public class RxAskSdkMethod {
         statementArguments.add(AmazonWebServiceRequestAsyncHandler.class);
         statementArguments.add(handlerMethod);
         statementArguments.add("subscriber");
-//        mainBuilder.addStatement("return $T.create($N -> $N.$L($N, $T.$L($N)))", Observable.class, "subscriber", amazonClientFieldName, targetMethodName, parameter.name, AmazonWebServiceRequestAsyncHandler.class, handlerMethod, "subscriber");
         mainBuilder.addStatement(String.format("return $T.create($N -> $N.$L(%s, $T.$L($N)))", parameterPlaceholders), statementArguments.toArray());
     }
 
@@ -75,20 +73,10 @@ public class RxAskSdkMethod {
         );
     }
 
-    private ParameterSpec parameter() {
-        Parameter inputParameter = amazonMethod.getParameters()[0];
-        Class<?> type = inputParameter.getType();
-        String name = inputParameter.getName().equals("arg0") ? lowercaseFirst(type.getSimpleName()) : inputParameter.getName();
-        return ParameterSpec
-                .builder(type, name)
-                .build();
-    }
-
     private ParameterizedType returnType() {
         ParameterizedType type = (ParameterizedType) amazonMethod.getParameters()[amazonMethod.getParameters().length-1].getParameterizedType();
         Type[] actualTypeArguments = type.getActualTypeArguments();
         return typeFor(actualTypeArguments[1]);
-
     }
 
     private ParameterizedType typeFor(Type argument) {
@@ -112,11 +100,6 @@ public class RxAskSdkMethod {
 
     private String sanitizedName() {
         return amazonMethod.getName().replace("Async", "");
-    }
-
-    static String lowercaseFirst(String s) {
-        return s.substring(0, 1).toLowerCase() +
-                s.substring(1);
     }
 
     private class Parameters {
